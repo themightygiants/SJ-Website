@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silent John — Producer & Puppet Builder</title>
+<meta name="description" content="Silent John — music producer, audio engineer, and DJ, also known for handmade foam puppet builds with The Mighty Giants.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+  :root{
+    --felt-dark:#1E2A28;
+    --felt-black:#0F1512;
+    --mustard:#E8A33D;
+    --coral:#D9614F;
+    --muslin:#F3EDE2;
+    --muslin-dim:#c9c2b3;
+    --stitch: repeating-linear-gradient(90deg, var(--muslin-dim) 0 10px, transparent 10px 20px);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--felt-black);
+    color:var(--muslin);
+    font-family:'Space Grotesk', sans-serif;
+    overflow-x:hidden;
+  }
+
+  /* Texture overlay - subtle felt grain */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    z-index:999;
+    opacity:0.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  h1,h2,h3{font-family:'Fraunces', serif; font-weight:600; letter-spacing:-0.01em;}
+
+  .label{
+    font-family:'Space Mono', monospace;
+    font-size:0.75rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--mustard);
+  }
+
+  .stitch-divider{
+    height:2px;
+    background:var(--stitch);
+    opacity:0.5;
+    margin:0 auto;
+    width:90%;
+    max-width:1100px;
+  }
+
+  section{
+    padding:100px 24px;
+    max-width:1100px;
+    margin:0 auto;
+    position:relative;
+  }
+
+  /* NAV */
+  nav{
+    position:fixed; top:0; left:0; right:0;
+    z-index:100;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 32px;
+    background:linear-gradient(180deg, rgba(15,21,18,0.9), transparent);
+    backdrop-filter:blur(4px);
+  }
+  .logo-mark{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Fraunces', serif; font-weight:700; font-size:1.3rem;
+    color:var(--muslin);
+    text-decoration:none;
+  }
+  .logo-mark .dot{
+    width:10px; height:10px; border-radius:50%;
+    background:var(--coral);
+    display:inline-block;
+  }
+  .wordmark-wrap{
+    position:relative;
+    display:inline-flex;
+    align-items:flex-start;
+  }
+  .wordmark-wrap .tm-mark{
+    position:absolute;
+    top:-2px;
+    right:-16px;
+    font-family:'Space Mono', monospace;
+    font-size:0.65rem;
+    font-weight:400;
+    color:var(--muslin);
+  }
+  nav ul{
+    display:flex; gap:28px; list-style:none;
+  }
+  nav a{
+    color:var(--muslin); text-decoration:none;
+    font-size:0.85rem; letter-spacing:0.05em;
+    text-transform:uppercase;
+    font-family:'Space Mono', monospace;
+    opacity:0.75;
+    transition:opacity 0.2s, color 0.2s;
+  }
+  nav a:hover, nav a:focus-visible{ opacity:1; color:var(--mustard); }
+  .nav-toggle{display:none; background:none; border:none; color:var(--muslin); font-size:1.5rem; cursor:pointer;}
+
+  /* HERO */
+  .hero{
+    min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding-top:120px;
+    position:relative;
+  }
+  .hero .label{margin-bottom:20px;}
+  .hero h1{
+    font-size:clamp(3rem, 9vw, 7rem);
+    line-height:0.95;
+    color:var(--muslin);
+  }
+  .hero h1 span{ color:var(--mustard); font-style:italic; font-weight:500; }
+  .hero p{
+    max-width:520px;
+    margin-top:28px;
+    font-size:1.15rem;
+    line-height:1.6;
+    color:var(--muslin-dim);
+  }
+  .hero-cta{
+    margin-top:40px;
+    display:flex; gap:16px; flex-wrap:wrap;
+  }
+  .btn{
+    font-family:'Space Mono', monospace;
+    font-size:0.85rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    padding:14px 26px;
+    border-radius:2px;
+    text-decoration:none;
+    display:inline-block;
+    transition:transform 0.2s ease, background 0.2s ease;
+    border:1px solid var(--mustard);
+  }
+  .btn-fill{ background:var(--mustard); color:var(--felt-black); }
+  .btn-fill:hover{ transform:translateY(-2px); background:#f0b355; }
+  .btn-outline{ color:var(--mustard); }
+  .btn-outline:hover{ transform:translateY(-2px); background:rgba(232,163,61,0.1); }
+
+  .hero-eye{
+    position:absolute;
+    right:6%; top:22%;
+    width:110px; height:110px;
+    border-radius:50%;
+    background:var(--muslin);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 0 0 6px var(--felt-dark), 0 0 0 8px var(--mustard);
+    opacity:0.9;
+  }
+  .hero-eye .pupil{
+    width:42px; height:42px; border-radius:50%;
+    background:var(--felt-black);
+    animation:look 5s ease-in-out infinite;
+  }
+  @keyframes look{
+    0%, 100% { transform:translate(0,0); }
+    20% { transform:translate(10px, -6px); }
+    45% { transform:translate(-12px, 4px); }
+    70% { transform:translate(6px, 8px); }
+  }
+  @media (max-width:800px){ .hero-eye{ display:none; } }
+
+  /* SECTION HEADERS */
+  .section-head{
+    display:flex; align-items:baseline; gap:16px;
+    margin-bottom:48px;
+  }
+  .section-head .num{
+    font-family:'Space Mono', monospace;
+    color:var(--coral);
+    font-size:0.9rem;
+  }
+  .section-head h2{
+    font-size:clamp(2rem, 4vw, 2.8rem);
+  }
+
+  /* BIO */
+  .bio-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:60px;
+    align-items:start;
+  }
+  .bio-photo{
+    aspect-ratio:4/5;
+    background:linear-gradient(160deg, var(--felt-dark), var(--coral) 140%);
+    border-radius:4px;
+    position:relative;
+    overflow:hidden;
+  }
+  .bio-text p{
+    font-size:1.05rem; line-height:1.75; color:var(--muslin-dim);
+    margin-bottom:18px;
+  }
+  .bio-text strong{ color:var(--muslin); font-weight:600; }
+  @media (max-width:760px){ .bio-grid{ grid-template-columns:1fr; } }
+
+  /* MUSIC */
+  .track-list{
+    border-top:1px solid rgba(243,237,226,0.15);
+  }
+  .track{
+    display:grid;
+    grid-template-columns:40px 1fr auto;
+    align-items:center;
+    gap:20px;
+    padding:22px 0;
+    border-bottom:1px solid rgba(243,237,226,0.15);
+    font-family:'Space Mono', monospace;
+  }
+  .track .idx{ color:var(--coral); }
+  .track .title{ font-family:'Fraunces', serif; font-size:1.2rem; color:var(--muslin); }
+  .track .meta{ color:var(--muslin-dim); font-size:0.85rem; }
+  .process-head{
+    margin-top:44px;
+    padding-top:28px;
+    border-top:1px dashed rgba(243,237,226,0.2);
+  }
+  .video-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+    margin-top:18px;
+  }
+  .video-card{
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .video-card video{
+    width:100%;
+    border-radius:4px;
+    background:#000;
+    border:1px solid rgba(232,163,61,0.25);
+    display:block;
+  }
+  .video-caption{
+    font-family:'Space Mono', monospace;
+    font-size:0.75rem;
+    color:var(--muslin-dim);
+    letter-spacing:0.04em;
+  }
+  @media (max-width:800px){ .video-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:520px){ .video-grid{ grid-template-columns:1fr; } }
+
+  .photo-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));
+    gap:10px;
+    margin-top:18px;
+  }
+  .photo-card{
+    display:block;
+    border-radius:4px;
+    overflow:hidden;
+    border:1px solid rgba(232,163,61,0.25);
+    background:#000;
+  }
+  .photo-card img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    aspect-ratio:1/1;
+    transition:opacity 0.2s ease;
+  }
+  .photo-card:hover img{ opacity:0.85; }
+  @media (max-width:520px){ .photo-grid{ grid-template-columns:repeat(auto-fill, minmax(90px, 1fr)); gap:8px; } }
+
+  .show-list{
+    border-top:1px solid rgba(243,237,226,0.15);
+  }
+  .show-item{
+    display:grid;
+    grid-template-columns:140px 1fr auto;
+    align-items:center;
+    gap:20px;
+    padding:22px 0;
+    border-bottom:1px solid rgba(243,237,226,0.15);
+  }
+  .show-date{
+    font-family:'Space Mono', monospace;
+    font-size:0.85rem;
+    color:var(--coral);
+  }
+  .show-info{
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .show-venue{
+    font-family:'Fraunces', serif; font-size:1.15rem; color:var(--muslin);
+  }
+  .show-tag{
+    font-family:'Space Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--mustard);
+    width:fit-content;
+  }
+  .show-tag.giants{ color:var(--coral); }
+  .show-link{
+    padding:10px 18px;
+    font-size:0.75rem;
+  }
+  @media (max-width:700px){
+    .show-item{ grid-template-columns:1fr; gap:8px; }
+    .show-link{ width:fit-content; }
+  }
+
+  .embed-wrap{
+    border:1px solid rgba(232,163,61,0.3);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .embed-note{
+    margin-top:36px;
+    padding:22px;
+    border:1px dashed var(--muslin-dim);
+    border-radius:4px;
+    font-family:'Space Mono', monospace;
+    font-size:0.85rem;
+    color:var(--muslin-dim);
+    line-height:1.6;
+  }
+
+  /* PUPPET BUILDS - blueprint style */
+  .blueprint{
+    background:var(--felt-dark);
+    border:1px solid rgba(232,163,61,0.3);
+    border-radius:4px;
+    padding:40px;
+  }
+  .crew-feature{
+    border-radius:4px;
+    overflow:hidden;
+    border:1px solid rgba(232,163,61,0.3);
+    margin-bottom:36px;
+  }
+  .crew-feature img{
+    width:100%;
+    display:block;
+  }
+
+  /* MERCH */
+  .merch-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:24px;
+  }
+  .merch-item{
+    aspect-ratio:1;
+    background:var(--felt-dark);
+    border:1px solid rgba(243,237,226,0.1);
+    border-radius:4px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:10px;
+    position:relative;
+    overflow:hidden;
+  }
+  .merch-item::before{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(45deg, rgba(232,163,61,0.06) 0 12px, transparent 12px 24px);
+  }
+  .merch-item span{
+    font-family:'Space Mono', monospace;
+    font-size:0.75rem;
+    letter-spacing:0.08em;
+    color:var(--mustard);
+    z-index:1;
+  }
+  .merch-item.has-image{ justify-content:flex-end; padding:0; }
+  .merch-item.has-image img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    z-index:0;
+  }
+  .merch-item.has-image .merch-label{
+    position:relative;
+    z-index:1;
+    width:100%;
+    background:rgba(15,21,18,0.82);
+    padding:10px 12px;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    text-align:center;
+  }
+  @media (max-width:760px){ .merch-grid{ grid-template-columns:1fr 1fr; } }
+
+  /* CONTACT */
+  .contact-wrap{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:60px;
+  }
+  .social-list{ list-style:none; margin-top:20px; }
+  .social-list li{ margin-bottom:12px; }
+  .social-list a{
+    color:var(--muslin); text-decoration:none;
+    font-family:'Space Mono', monospace;
+    font-size:0.95rem;
+    border-bottom:1px solid transparent;
+    transition:border-color 0.2s, color 0.2s;
+  }
+  .social-list a:hover{ color:var(--mustard); border-color:var(--mustard); }
+
+  form{ display:flex; flex-direction:column; gap:14px; margin-top:20px; }
+  input[type=email]{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--muslin-dim);
+    color:var(--muslin);
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1rem;
+    padding:12px 4px;
+    outline:none;
+  }
+  input[type=email]:focus{ border-bottom-color:var(--mustard); }
+  input[type=email]::placeholder{ color:var(--muslin-dim); }
+  form .btn{ align-self:flex-start; border:none; cursor:pointer; }
+
+  footer{
+    text-align:center;
+    padding:40px 24px 60px;
+    font-family:'Space Mono', monospace;
+    font-size:0.75rem;
+    color:var(--muslin-dim);
+  }
+
+  @media (max-width:760px){
+    .contact-wrap{ grid-template-columns:1fr; }
+    nav ul{
+      position:fixed; top:0; right:0; height:100vh; width:220px;
+      background:var(--felt-dark);
+      flex-direction:column;
+      padding:100px 28px;
+      transform:translateX(100%);
+      transition:transform 0.3s ease;
+    }
+    nav ul.open{ transform:translateX(0); }
+    .nav-toggle{ display:block; }
+  }
+
+  :focus-visible{ outline:2px solid var(--mustard); outline-offset:3px; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#top" class="logo-mark"><img src="assets/images/logo.png" alt="SJ logo" style="height:44px; width:auto;"><span class="wordmark-wrap"><img src="assets/images/wordmark.png" alt="Silent John" style="height:26px; width:auto;"><span class="tm-mark">TM</span></span></a>
+  <button class="nav-toggle" aria-label="Toggle menu" onclick="document.querySelector('nav ul').classList.toggle('open')">☰</button>
+  <ul>
+    <li><a href="#bio">About</a></li>
+    <li><a href="#music">Music</a></li>
+    <li><a href="#puppets">Puppet Builds</a></li>
+    <li><a href="#shows">Shows</a></li>
+    <li><a href="#merch">Merch</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div id="top" class="hero">
+  <div class="hero-eye" aria-hidden="true"><div class="pupil"></div></div>
+  <span class="label">Producer · Audio Engineer · DJ · Puppet Builder</span>
+  <h1>Always making<br><span>something</span>.</h1>
+  <p>Silent John makes tracks and makes things — original production alongside handmade foam puppet builds, including work with the hip-hop puppet crew The Mighty Giants.</p>
+  <div class="hero-cta">
+    <a href="#music" class="btn btn-fill">Hear the music</a>
+    <a href="#puppets" class="btn btn-outline">See the builds</a>
+  </div>
+</div>
+
+<div class="stitch-divider"></div>
+
+<section id="bio">
+  <div class="section-head"><h2>About</h2></div>
+  <div class="bio-grid">
+    <div class="bio-photo"><img src="assets/images/bio-photo.jpg" alt="Silent John DJing" style="width:100%; height:100%; object-fit:cover; display:block;"></div>
+    <div class="bio-text">
+      <p>Silent John — DJ, music producer, and puppet builder — exhibits an array of hip hop, soul, funk, and breaks in his style of turntablism.</p>
+      <p>Originally from San Jose, <strong>Silent John toured the summer of 2004 with legendary artist KRS-ONE</strong>, and DJ'd for a number of emcees in the rap game, performing at various out-of-state showcases, music festivals, and clubs. He has also partnered with independent clothing lines and boutiques on the West Coast for exclusive mixtape releases.</p>
+      <p>His past production credits include <strong>SHOWTIME's Power</strong>, video games such as <strong>Marvel vs. Capcom 2</strong>, and the Survios VR game <strong>Electronauts</strong>. Silent John continues to advance his skills as a certified audio engineer and technician — and, alongside all of that, builds foam puppets and performs with the hip-hop puppet crew <strong>The Mighty Giants</strong>.</p>
+    </div>
+  </div>
+</section>
+
+<div class="stitch-divider"></div>
+
+<section id="music">
+  <div class="section-head"><h2>Music</h2></div>
+  <div class="embed-wrap">
+    <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay"
+      src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/silent-john&color=%23e8a33d&auto_play=false&hide_related=true&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=false">
+    </iframe>
+  </div>
+  <div class="embed-note">
+    ⌁ This pulls live from your SoundCloud profile. If you'd rather feature specific tracks up top, send me their individual share links and I'll swap this for a curated list instead.
+  </div>
+</section>
+
+<div class="stitch-divider"></div>
+
+<section id="puppets">
+  <div class="section-head"><h2>Puppet Builds</h2></div>
+  <div class="blueprint">
+    <div class="crew-feature">
+      <img src="assets/images/group-camo.jpg" alt="Silent John with the full puppet crew" loading="lazy">
+    </div>
+    <div class="process-head">
+      <span class="label">Build Process</span>
+      <p style="color:var(--muslin-dim); font-size:0.9rem; margin-top:8px;">A look at the foam-and-fleece process from raw material to finished character.</p>
+    </div>
+    <div class="video-grid">
+      <div class="video-card">
+        <video controls preload="none" poster="assets/videos/timelapse_poster.jpg">
+          <source src="assets/videos/timelapse.mp4" type="video/mp4">
+        </video>
+        <span class="video-caption">Build Timelapse</span>
+      </div>
+      <div class="video-card">
+        <video controls preload="none" poster="assets/videos/vertical_process_poster.jpg">
+          <source src="assets/videos/vertical_process.mp4" type="video/mp4">
+        </video>
+        <span class="video-caption">Full Build Walkthrough</span>
+      </div>
+      <div class="video-card">
+        <video controls preload="none" poster="assets/videos/build_clip1_poster.jpg">
+          <source src="assets/videos/build_clip1.mp4" type="video/mp4">
+        </video>
+        <span class="video-caption">Process Clip</span>
+      </div>
+      <div class="video-card">
+        <video controls preload="none" poster="assets/videos/build_clip2_poster.jpg">
+          <source src="assets/videos/build_clip2.mp4" type="video/mp4">
+        </video>
+        <span class="video-caption">Process Clip</span>
+      </div>
+      <div class="video-card">
+        <video controls preload="none" poster="assets/videos/build_clip3_poster.jpg">
+          <source src="assets/videos/build_clip3.mp4" type="video/mp4">
+        </video>
+        <span class="video-caption">Process Clip</span>
+      </div>
+    </div>
+    <div class="process-head" style="margin-top:36px;">
+      <span class="label">Gallery</span>
+    </div>
+    <div class="photo-grid">
+      <a class="photo-card" href="assets/images/gallery/gallery-01.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-01_thumb.jpg" alt="Puppet build in progress, fitting glasses to the character head" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-02.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-02_thumb.jpg" alt="Puppet hands on the workbench" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-03.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-03_thumb.jpg" alt="Puppet character pointing to logo patch on shirt" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-04.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-04_thumb.jpg" alt="The Mighty Giants puppet portrait against a brick wall" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-05.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-05_thumb.jpg" alt="Two puppet characters posing together in band tees" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-06.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-06_thumb.jpg" alt="Puppet head build in progress on the workbench" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-07.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-07_thumb.jpg" alt="The puppet crew crowded around the sewing machine in the workshop" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-08.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-08_thumb.jpg" alt="Puppet character playing a MIDI keyboard in the studio" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-09.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-09_thumb.jpg" alt="Close-up of a puppet character's face with beard detail" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-10.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-10_thumb.jpg" alt="Puppet character portrait in a denim jacket, green backdrop" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-11.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-11_thumb.jpg" alt="Puppet character holding the brim of a San Jose cap" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-12.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-12_thumb.jpg" alt="Puppet character with dreadlocks holding a microphone, black and white" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-13.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-13_thumb.jpg" alt="Pile of colorful felt hand keychains" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-14.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-14_thumb.jpg" alt="Puppet body piece in progress on the cutting mat" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-15.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-15_thumb.jpg" alt="Two puppet heads in progress with eyelash detail" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-16.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-16_thumb.jpg" alt="Cross-section of a foam puppet mouth mechanism" loading="lazy">
+      </a>
+      <a class="photo-card" href="assets/images/gallery/gallery-17.jpg" target="_blank" rel="noopener">
+        <img src="assets/images/gallery/gallery-17_thumb.jpg" alt="The Mighty Giants puppet crew group graphic" loading="lazy">
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="stitch-divider"></div>
+
+<section id="shows">
+  <div class="section-head"><h2>Shows</h2></div>
+  <p style="color:var(--muslin-dim); margin-bottom:32px;">Current residency — more dates coming soon.</p>
+  <div class="show-list">
+    <div class="show-item">
+      <span class="show-date">Weekly · Saturdays</span>
+      <div class="show-info">
+        <span class="show-venue">Shipmates Restaurant &amp; Sports Bar — Cerritos, CA</span>
+        <span class="show-tag">Residency — Solo DJ Set</span>
+      </div>
+      <a href="https://instagram.com/silentjohn" target="_blank" rel="noopener" class="btn btn-outline show-link">Details</a>
+    </div>
+  </div>
+  <p style="color:var(--muslin-dim); font-size:0.85rem; margin-top:14px; font-style:italic;">Saturday residency runs weekly unless I'm booked elsewhere — check back for the latest.</p>
+  <div class="embed-note">
+    ⌁ More show dates go here once they're ready to announce. If you use Songkick, Bandsintown, or a similar service, send me the profile link and I can pull a live embed here instead of a manual list.
+  </div>
+</section>
+
+<div class="stitch-divider"></div>
+
+<section id="merch">
+  <div class="section-head"><h2>Merch</h2></div>
+  <p style="color:var(--muslin-dim); margin-bottom:32px;">Store's coming soon — here's a preview of what's on the way.</p>
+  <div class="merch-grid">
+    <div class="merch-item"><span>TEE — COMING SOON</span></div>
+    <div class="merch-item has-image">
+      <img src="assets/images/merch/hand-keychain.jpg" alt="Handmade puppet hand keychains">
+      <div class="merch-label">
+        <span>PUPPET HAND KEYCHAIN — COMING SOON</span>
+        <span style="font-size:0.7rem; color:var(--muslin-dim); font-weight:400;">Handmade by Silent John</span>
+      </div>
+    </div>
+    <div class="merch-item has-image">
+      <img src="assets/images/merch/foot-keychain.jpg" alt="Handmade puppet foot keychains">
+      <div class="merch-label">
+        <span>PUPPET FOOT KEYCHAIN — COMING SOON</span>
+        <span style="font-size:0.7rem; color:var(--muslin-dim); font-weight:400;">Handmade by Silent John</span>
+      </div>
+    </div>
+    <div class="merch-item has-image">
+      <img src="assets/images/merch/musubi-keychain.jpg" alt="Handmade spam musubi keychains">
+      <div class="merch-label">
+        <span>SPAM MUSUBI KEYCHAIN — COMING SOON</span>
+        <span style="font-size:0.7rem; color:var(--muslin-dim); font-weight:400;">Handmade by Silent John</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stitch-divider"></div>
+
+<section id="contact">
+  <div class="section-head"><h2>Contact</h2></div>
+  <div class="contact-wrap">
+    <div>
+      <p style="color:var(--muslin-dim);">Booking, collabs, or puppet commissions — reach out.</p>
+      <ul class="social-list">
+        <li><a href="mailto:info@silentjohn.com">info@silentjohn.com</a></li>
+        <li><a href="https://instagram.com/silentjohn" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://soundcloud.com/silent-john" target="_blank" rel="noopener">SoundCloud</a></li>
+        <li><a href="https://tiktok.com/@silentjohn" target="_blank" rel="noopener">TikTok</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="label">Mailing List</span>
+      <form onsubmit="event.preventDefault(); this.querySelector('.btn').textContent='Signed Up ✓';">
+        <input type="email" placeholder="your@email.com" required>
+        <button type="submit" class="btn btn-fill">Notify Me</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 Silent John — silentjohn.com
+</footer>
+
+</body>
+</html>
